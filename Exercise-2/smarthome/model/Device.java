@@ -1,4 +1,8 @@
+package smarthome.model;
+
 import java.util.*;
+
+import smarthome.Interface.DeviceInterface;
 
 abstract class Device implements DeviceInterface{
     private int deviceID;

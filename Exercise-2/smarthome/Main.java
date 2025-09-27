@@ -1,4 +1,9 @@
+package smarthome;
+
 import java.util.Scanner;
+import smarthome.manager.UserManager;
+import smarthome.manager.RoomManager;
+import smarthome.manager.DeviceManager;
 
 class Main{
 private final static int EXIT_CHOICE = 0;

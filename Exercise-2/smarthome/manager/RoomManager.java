@@ -1,5 +1,8 @@
+package smarthome.manager;
+
 import java.util.List;
 import java.util.ArrayList;
+import smarthome.model.Room;
 
 public class RoomManager {
         private static int roomID = 1;

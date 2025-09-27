@@ -1,5 +1,9 @@
+package smarthome.manager;
+
 import java.util.ArrayList;
 import java.util.List;
+import smarthome.model.Device;
+import smarthome.model.ConcreteDevice;
 
 public class DeviceManager {
         private static int deviceID = 1;
@@ -17,8 +21,8 @@ public class DeviceManager {
             }
         }
         public static void addDevices(String deviceName, String deviceType){
-        devices.add(new LightDevice(deviceID, deviceName, deviceType));
-        System.out.println("room added successfully");
+        devices.add(new ConcreteDevice(deviceID, deviceName, deviceType));
+        System.out.println("device added successfully");
         deviceID++;
         }
         public static void getDevice(int deviceID){
