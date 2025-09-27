@@ -1,4 +1,4 @@
-package smarthome.interfaceFolder;
+package smarthome.Interface;
 
 public interface DeviceInterface {
  void getStatus();

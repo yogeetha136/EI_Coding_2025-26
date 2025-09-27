@@ -1,13 +1,12 @@
 package smarthome.model;
-
-import java.util.*;
-
 import smarthome.Interface.DeviceInterface;
 
-abstract class Device implements DeviceInterface{
+public abstract class Device implements DeviceInterface{
     private int deviceID;
     private String deviceName;
     private String deviceType;
+    //abstract method
+      abstract void createDevice();
 
         public Device(int deviceID, String deviceName, String deviceType){
         this.deviceID = deviceID;
@@ -33,11 +32,13 @@ abstract class Device implements DeviceInterface{
     public String getDeviceType(){
         return deviceType;
     }
-    abstract void createDevice();
 
     public boolean getPing(){
         return true;
     }
-
+    
+    public void getStatus() { 
+        return; 
+    }
     
 }

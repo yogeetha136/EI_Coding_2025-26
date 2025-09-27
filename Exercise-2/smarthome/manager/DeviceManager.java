@@ -1,13 +1,18 @@
 package smarthome.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import smarthome.model.Device;
+import java.util.Map;
+
 import smarthome.model.ConcreteDevice;
+import smarthome.model.Device; 
 
 public class DeviceManager {
         private static int deviceID = 1;
         static List<Device> devices = new ArrayList<>();
+        private static Map<Integer, List<Integer>> deviceToRoom = new HashMap<>();
+
         public static void listDevices(){
             if(devices.isEmpty()){
                 System.out.println("room is not yet added");

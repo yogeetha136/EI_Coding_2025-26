@@ -3,10 +3,23 @@ package smarthome.manager;
 import java.util.List;
 import java.util.ArrayList;
 import smarthome.model.Room;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RoomManager {
         private static int roomID = 1;
         static List<Room> rooms = new ArrayList<>();
+        private static Map<Integer, List<Integer>> roomToUser = new HashMap<>();
+        public static void addUserToRoom(int roomID, List<Integer> userID){
+            roomToUser.put(roomID,new ArrayList<>());
+            roomToUser.get(roomID).addAll(userID);
+        }
+
+        public static void getUserIdsInRoom() {
+           roomToUser.forEach((key, valueList) -> 
+            System.out.println("Key: " + key + ", Values: " + valueList)
+        );
+    }
         public static void listRooms(){
             if(rooms.isEmpty()){
                 System.out.println("room is not yet added");
@@ -37,6 +50,7 @@ public class RoomManager {
                 break;
             }
         }
+
     }
 
     
