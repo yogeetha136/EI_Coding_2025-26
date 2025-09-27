@@ -5,7 +5,9 @@ private final static int EXIT_CHOICE = 0;
     public static void main(String args[]){
         int moduleChoice;
         do{
-        System.out.println("1.add users");
+        System.out.println("1.User Module");
+        System.out.println("2.Room Module");
+        System.out.println("3.Device Module");
         Scanner scanner = new Scanner(System.in);
         moduleChoice = scanner.nextInt();
         switch(moduleChoice){
@@ -33,7 +35,51 @@ private final static int EXIT_CHOICE = 0;
                         UserManager.getUser(userID);
                         break;
                 }
-                
+            case 2:
+                System.out.println("1. List the rooms");
+                System.out.println("2. Add rooms");
+                System.out.println("3. Get room by ID");
+                int roomChoice = scanner.nextInt();
+                switch(roomChoice){
+                    case 1:
+                        RoomManager.listRooms();
+                        break;
+                    case 2:
+                        System.out.println("enter room name:");
+                        String roomName = scanner.next();
+                        System.out.println("enter room type:");
+                        String roomType = scanner.next();
+                        RoomManager.addRooms(roomName, roomType);
+                        break;
+                    case 3:
+                        System.out.println("enter the room ID:");
+                        int roomID = scanner.nextInt();
+                        RoomManager.getUser(roomID);
+                        break;
+                }
+        
+            case 3:
+                System.out.println("1. List the devices");
+                System.out.println("2. Add devices");
+                System.out.println("3. Get device by ID");
+                int deviceChoice = scanner.nextInt();
+                switch(deviceChoice){
+                    case 1:
+                        DeviceManager.listDevices();
+                        break;
+                    case 2:
+                        System.out.println("enter device name:");
+                        String deviceName = scanner.next();
+                        System.out.println("enter device type:");
+                        String deviceType = scanner.next();
+                        DeviceManager.addDevices(deviceName, deviceType);
+                        break;
+                    case 3:
+                        System.out.println("enter the device ID:");
+                        int deviceID = scanner.nextInt();
+                        DeviceManager.getDevice(deviceID);
+                        break;
+                }
         }
     }while(moduleChoice != EXIT_CHOICE);
     }

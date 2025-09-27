@@ -50,6 +50,7 @@ public class UserManager{
             }
             else{
                 System.out.println("The user with this user ID not exists.");
+                break;
             }
         }
     }
