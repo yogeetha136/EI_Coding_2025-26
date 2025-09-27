@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import smarthome.manager.UserManager;
-import smarthome.model.Room;
 import smarthome.manager.RoomManager;
 import smarthome.manager.DeviceManager;
 
@@ -50,6 +49,8 @@ private final static int EXIT_CHOICE = 0;
                 System.out.println("3. Get room by ID");
                 System.out.println("4.Give User permissions to rooms");
                 System.out.println("5.List the room with user permission using room ID");
+                System.out.println("6.Give devices access to rooms");
+                System.out.println("7.List the room with devices using room ID");   
                 int roomChoice = scanner.nextInt();
                 switch(roomChoice){
                     case 1:
@@ -71,10 +72,10 @@ private final static int EXIT_CHOICE = 0;
                         System.out.println("enter the room ID:");
                         int roomNo = scanner.nextInt();
                         System.out.println("count of users going to add for the particualr room");
-                        int count = scanner.nextInt();
+                        int userCount = scanner.nextInt();
                         System.out.println("enter the userIDS to give permission to the room"+roomNo+":");
                         List<Integer> userNo = new ArrayList<>();
-                        for(int i=0; i<count; i++){
+                        for(int i=0; i<userCount; i++){
                             int user = scanner.nextInt();
                             userNo.add(user);
                             RoomManager.addUserToRoom(roomNo, userNo);
@@ -83,6 +84,22 @@ private final static int EXIT_CHOICE = 0;
                     case 5:
                         RoomManager.getUserIdsInRoom();
                         break;
+                    case 6:
+                        System.out.println("enter the room ID:");
+                        int RoomNo = scanner.nextInt();
+                        System.out.println("count of devices going to add for the particualr room");
+                        int deviceCount = scanner.nextInt();
+                        System.out.println("enter the deviceIDS to add to the room"+RoomNo+":");
+                        List<Integer> deviceNo = new ArrayList<>();
+                        for(int i=0; i<deviceCount; i++){
+                            int device = scanner.nextInt();
+                            deviceNo.add(device);
+                            RoomManager.addDeviceToRoom(RoomNo, deviceNo);
+                        }
+                        break;
+                    case 7:
+                        RoomManager.getDeviceIdsInRoom();
+                        break;
                 }
                 break;
         
@@ -90,6 +107,7 @@ private final static int EXIT_CHOICE = 0;
                 System.out.println("1. List the devices");
                 System.out.println("2. Add devices");
                 System.out.println("3. Get device by ID");
+             
                 int deviceChoice = scanner.nextInt();
                 switch(deviceChoice){
                     case 1:
@@ -108,6 +126,8 @@ private final static int EXIT_CHOICE = 0;
                         DeviceManager.getDevice(deviceID);
                         break;
                 }
+                break;
+            
         }
     }while(moduleChoice != EXIT_CHOICE);
     }

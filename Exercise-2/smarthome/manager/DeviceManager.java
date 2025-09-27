@@ -11,18 +11,17 @@ import smarthome.model.Device;
 public class DeviceManager {
         private static int deviceID = 1;
         static List<Device> devices = new ArrayList<>();
-        private static Map<Integer, List<Integer>> deviceToRoom = new HashMap<>();
-
         public static void listDevices(){
-            if(devices.isEmpty()){
-                System.out.println("room is not yet added");
-            }
-            else{
+            if(!devices.isEmpty()){
                 for(int i=0; i<devices.size(); i++){
                     System.out.println(devices.get(i).getDeviceID());
                     System.out.println(devices.get(i).getDeviceName());
                     System.out.println(devices.get(i).getDeviceType());
                 }
+            }
+            else{
+                System.out.println("device is not yet added");
+
             }
         }
         public static void addDevices(String deviceName, String deviceType){
@@ -39,7 +38,7 @@ public class DeviceManager {
                 System.out.println(devices.get(i).getDeviceType());                
             }
             else{
-                System.out.println("The room with this room ID not exists.");
+                System.out.println("The device with this device ID not exists.");
                 break;
             }
         }

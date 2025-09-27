@@ -10,6 +10,18 @@ public class RoomManager {
         private static int roomID = 1;
         static List<Room> rooms = new ArrayList<>();
         private static Map<Integer, List<Integer>> roomToUser = new HashMap<>();
+
+        private static Map<Integer, List<Integer>> deviceToRoom = new HashMap<>();
+        public static void addDeviceToRoom(int roomID, List<Integer> deviceID){
+            deviceToRoom.put(roomID,new ArrayList<>());
+            deviceToRoom.get(roomID).addAll(deviceID);
+        }
+
+        public static void getDeviceIdsInRoom() {
+           deviceToRoom.forEach((key, valueList) -> 
+            System.out.println("Key: " + key + ", Values: " + valueList)
+        );
+    }
         public static void addUserToRoom(int roomID, List<Integer> userID){
             roomToUser.put(roomID,new ArrayList<>());
             roomToUser.get(roomID).addAll(userID);
