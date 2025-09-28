@@ -9,6 +9,26 @@ import smarthome.model.User;
 public class UserManager{
         static List<User> users= new ArrayList<>();
         private static int userID = 1;
+
+        public static User findUserById(int id) {
+        for (User user : users) {
+            if (user.getUserID() == id) {
+                return user;
+            }
+        }
+        return null;
+    }
+    
+    public static User login(String emailID, String passWord) {
+        for (User user : users) {
+            if (user.getMailID().equals(emailID) && user.getPassWord().equals(passWord)) {
+                System.out.println("Login successful! Welcome, " + user.getUserName() + ".");
+                return user; 
+            }
+        }
+        System.out.println("Login failed: Invalid email or password.");
+        return null; 
+    }
     public static void listUsers(){
         if(users.isEmpty()){
             System.out.println("no users aaded yet");
@@ -43,20 +63,22 @@ public class UserManager{
         userID++;
     }
 
-    public static void getUser(int userID){
-        //To Do: check using stream instead of looping
-        for(int i=0; i<users.size(); i++){
-            if(users.get(i).getUserID() == userID){
-                System.out.println(users.get(i).getUserID());
-                System.out.println(users.get(i).getUserName());
-                System.out.println(users.get(i).getMailID());                
-            }
-            else{
-                System.out.println("The user with this user ID not exists.");
-                break;
-            }
+public static void getUser(int userID){
+    boolean found = false;
+    for(int i = 0; i < users.size(); i++){
+        if(users.get(i).getUserID() == userID){
+            System.out.println("User found:");
+            System.out.println("ID: " + users.get(i).getUserID());
+            System.out.println("Name: " + users.get(i).getUserName());
+            System.out.println("Email: " + users.get(i).getMailID());
+            found = true;
+            break; 
         }
     }
+    if(!found){
+        System.out.println("The user with this user ID not exists.");
+    }
+}
 
     public static boolean isEmailValid(String email) {
         // Pattern: Starts with non-space, then @, then non-space, then dot (.), then non-space
@@ -68,7 +90,7 @@ public class UserManager{
 
     public static boolean isPassWordValid(String passWord){
         // Pattern: Contains a password of EXACTLY 10 characters, requiring at least one lowercase, one uppercase, one digit, and one symbol
-        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10}$";
+    String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(passWord);
         return matcher.matches();

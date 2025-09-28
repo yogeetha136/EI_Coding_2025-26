@@ -5,6 +5,7 @@ public abstract class Device implements DeviceInterface{
     private int deviceID;
     private String deviceName;
     private String deviceType;
+    private boolean status = false;
     //abstract method
       abstract void createDevice();
 
@@ -12,7 +13,9 @@ public abstract class Device implements DeviceInterface{
         this.deviceID = deviceID;
         this.deviceName = deviceName;
         this.deviceType = deviceType;
+
     }
+
 
     public void setDeviceID(int deviceID){
         this.deviceID = deviceID;
@@ -37,8 +40,20 @@ public abstract class Device implements DeviceInterface{
         return true;
     }
     
-    public void getStatus() { 
-        return; 
+        @Override
+    public void turnOn() {
+        this.status = true;
+        System.out.println(deviceName + " is turned ON.");
     }
-    
+
+    @Override
+    public void turnOff() {
+        this.status = false;
+        System.out.println(deviceName + " is turned OFF.");
+    }
+
+    @Override
+    public void getStatus() {
+        System.out.println(deviceName + " status: " + (status ? "ON" : "OFF"));
+    }
 }

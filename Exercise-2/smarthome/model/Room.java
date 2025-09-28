@@ -1,7 +1,4 @@
 package smarthome.model;
-
-import java.util.List;
-import java.util.ArrayList;
 public class Room {
     private int roomID;
     private String roomName;
