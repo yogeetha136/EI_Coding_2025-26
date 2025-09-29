@@ -9,4 +9,5 @@
 
 # VS Code
 .vscode/
+*.temp
 /Exercise-2/.gradle
