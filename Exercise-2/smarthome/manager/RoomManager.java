@@ -39,10 +39,30 @@ public enum RoomType {
             System.out.println("Key: " + key + ", Values: " + valueList)
         );
     }
-        public static void addUserToRoom(int roomID, List<Integer> userID){
-            roomToUser.put(roomID,new ArrayList<>());
-            roomToUser.get(roomID).addAll(userID);
+         public static void addUserToRoom(int roomID, List<Integer> userIDList){
+        Room room = findRoomById(roomID);
+        if (room == null) {
+            System.out.println("ERROR: Room ID " + roomID + " not found.");
+            return;
         }
+
+        // Initialize the list if the room is new to the map
+        roomToUser.putIfAbsent(roomID, new ArrayList<>());
+        
+        // Add new user IDs if they don't already exist in the list
+        for (int userID : userIDList) {
+            if (UserManager.findUserById(userID) == null) {
+                 System.out.println("Warning: User ID " + userID + " not found and was skipped.");
+                 continue;
+            }
+            if (!roomToUser.get(roomID).contains(userID)) {
+                roomToUser.get(roomID).add(userID);
+                System.out.println("User " + userID + " added to Room " + roomID + ".");
+            } else {
+                System.out.println("User " + userID + " already has access to Room " + roomID + ".");
+            }
+        }
+    }
 
         public static void getUserIdsInRoom() {
            roomToUser.forEach((key, valueList) -> 
@@ -103,42 +123,49 @@ public static void getUser(int roomID){
         }
         return null;
     }
-public static void controlSpecificDevicesInRoom(int roomID, List<Integer> specificDeviceIds, String action, int userID) {
-    if (!action.equalsIgnoreCase("ON") && !action.equalsIgnoreCase("OFF")) {
-        System.out.println("Invalid action. Use 'ON' or 'OFF'.");
-        return;
-    }
-
-    List<Integer> roomDevices = deviceToRoom.get(roomID);
-
-    if (roomDevices == null || roomDevices.isEmpty()) {
-        System.out.println("Room ID " + roomID + " has no devices assigned.");
-        return;
-    }
-
-    System.out.println("\nExecuting action: " + action + " on specific devices by User " + userID + " in Room " + roomID + "...");
-
-    for (int deviceID : specificDeviceIds) {
-        if (!roomDevices.contains(deviceID)) {
-            System.out.println("Warning: Device ID " + deviceID + " is not in Room " + roomID + " and was skipped.");
-            continue;
+ // Updated: To ensure the devices being controlled belong to the room.
+    public static void controlSpecificDevicesInRoom(int roomID, List<Integer> specificDeviceIds, String action, int userID) {
+        if (!isUserAuthorizedForRoom(roomID, userID)) {
+             System.out.println("ERROR: User " + userID + " does not have permission to control devices in Room " + roomID + ".");
+             return;
         }
         
-        Device device = DeviceManager.findDeviceById(deviceID);
-        if (device != null) {
-            if (action.equalsIgnoreCase("ON")) {
-                device.turnOn();
-            } else { 
-                device.turnOff();
-            }
-        } else {
-            System.out.println("Warning: Device ID " + deviceID + " not found in DeviceManager.");
+        // ... rest of the method logic remains the same ...
+        if (!action.equalsIgnoreCase("ON") && !action.equalsIgnoreCase("OFF")) {
+             System.out.println("Invalid action. Use 'ON' or 'OFF'.");
+             return;
         }
+
+        List<Integer> roomDevices = deviceToRoom.get(roomID);
+
+        if (roomDevices == null || roomDevices.isEmpty()) {
+             System.out.println("Room ID " + roomID + " has no devices assigned.");
+             return;
+        }
+
+        System.out.println("\nExecuting action: " + action + " on specific devices by User " + userID + " in Room " + roomID + "...");
+
+        for (int deviceID : specificDeviceIds) {
+             if (!roomDevices.contains(deviceID)) {
+                 System.out.println("Warning: Device ID " + deviceID + " is not in Room " + roomID + " and was skipped.");
+                 continue;
+             }
+             
+             Device device = DeviceManager.findDeviceById(deviceID);
+             if (device != null) {
+                 if (action.equalsIgnoreCase("ON")) {
+                     device.turnOn();
+                 } else { 
+                     device.turnOff();
+                 }
+             } else {
+                 System.out.println("Warning: Device ID " + deviceID + " not found in DeviceManager.");
+             }
+        }
+        
+        System.out.println("\nFinal Status of all devices in Room " + roomID + " (including controlled devices):");
+        listRoomDeviceStatuses(roomID);
     }
-    
-    System.out.println("\nFinal Status of all devices in Room " + roomID + " (including controlled devices):");
-    listRoomDeviceStatuses(roomID);
-}
 
     public static void listRoomDeviceStatuses(int roomID) {
         List<Integer> deviceIds = deviceToRoom.get(roomID);
@@ -155,28 +182,40 @@ public static void controlSpecificDevicesInRoom(int roomID, List<Integer> specif
     }
 
 
-    public static void listUserRoomsAndDevices(int userID) {
-        System.out.println("\nAll Rooms and Devices" + userID + ":");
+ // Updated: Only shows rooms and devices the user has permission for.
+    public static void listUserRoomsAndDevices(int currentUserID) {
+        System.out.println("\n--- Rooms and Devices Accessible by User " + currentUserID + " ---");
         
+        boolean hasAccess = false;
+
         if (rooms.isEmpty()) {
-            System.out.println("No rooms have been added to the system yet.");
-            return;
+             System.out.println("No rooms have been added to the system yet.");
+             return;
         }
 
         for (Room room : rooms) {
             int roomID = room.getRoomID();
-            System.out.println("    - Room ID " + roomID + ": " + room.getRoomName() + " (" + room.getRoomType() + ")");
             
-            List<Integer> deviceIds = deviceToRoom.get(roomID);
-            if (deviceIds != null && !deviceIds.isEmpty()) {
-                System.out.print("      Devices: ");
-                for (int i = 0; i < deviceIds.size(); i++) {
-                    System.out.print(deviceIds.get(i) + (i < deviceIds.size() - 1 ? ", " : ""));
+            // SECURITY CHECK: Only display rooms the current user is authorized for
+            if (isUserAuthorizedForRoom(roomID, currentUserID)) {
+                System.out.println("- Room ID " + roomID + ": " + room.getRoomName() + " (" + room.getRoomType() + ")");
+                hasAccess = true;
+                
+                List<Integer> deviceIds = deviceToRoom.get(roomID);
+                if (deviceIds != null && !deviceIds.isEmpty()) {
+                    System.out.print("Devices: ");
+                    for (int i = 0; i < deviceIds.size(); i++) {
+                        System.out.print(deviceIds.get(i) + (i < deviceIds.size() - 1 ? ", " : ""));
+                    }
+                    System.out.println();
+                } else {
+                    System.out.println("Devices: (None)");
                 }
-                System.out.println();
-            } else {
-                System.out.println("      Devices: (None)");
             }
+        }
+        
+        if (!hasAccess) {
+            System.out.println("You have no access permissions to any rooms yet.");
         }
     }
     public static void listAvailableRoomOptions() {
@@ -208,4 +247,37 @@ public static void controlSpecificDevicesInRoom(int roomID, List<Integer> specif
         }
         return false;
     }
+
+    
+    // Updated: Only shows rooms the user has permission for.
+    public static void getUserIdsInRoom(int currentUserID) {
+        System.out.println("\n--- Rooms and Their Permitted User IDs (Filtered by User " + currentUserID + ") ---");
+
+        boolean userHasRoomAccess = false;
+        
+        // Loop through all rooms to find those the current user has access to
+        for (Map.Entry<Integer, List<Integer>> entry : roomToUser.entrySet()) {
+            int roomID = entry.getKey();
+            List<Integer> userIDs = entry.getValue();
+
+            if (userIDs.contains(currentUserID)) {
+                System.out.println("Room ID: " + roomID + ", User IDs: " + userIDs);
+                userHasRoomAccess = true;
+            }
+        }
+        if (!userHasRoomAccess) {
+             System.out.println("User " + currentUserID + " has not been granted permission to any rooms yet.");
+        }
+    }
+    
+    // New Method: Checks if a specific user has permission to access a specific room
+    public static boolean isUserAuthorizedForRoom(int roomID, int userID) {
+        List<Integer> userIDs = roomToUser.get(roomID);
+        return userIDs != null && userIDs.contains(userID);
+    }
+    
+   
+    
+   
+    
 }

@@ -46,14 +46,14 @@ public abstract class Device implements DeviceInterface{
         System.out.println(deviceName + " is turned ON.");
     }
 
-    @Override
+        @Override
     public void turnOff() {
         this.status = false;
         System.out.println(deviceName + " is turned OFF.");
     }
 
-    @Override
-    public void getStatus() {
-        System.out.println(deviceName + " status: " + (status ? "ON" : "OFF"));
+    @Override 
+    public String getStatus() { 
+        return "ID: " + deviceID + " | Name: " + deviceName + " | Type: " + deviceType + " | Status: " + (status ? "ON" : "OFF");
     }
 }

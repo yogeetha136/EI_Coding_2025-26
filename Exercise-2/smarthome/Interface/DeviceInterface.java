@@ -1,7 +1,7 @@
 package smarthome.Interface;
 
 public interface DeviceInterface {
- void getStatus();
+ String getStatus();
  boolean getPing(); 
     void turnOn();
     void turnOff(); 

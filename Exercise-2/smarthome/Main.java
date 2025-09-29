@@ -7,6 +7,7 @@ import smarthome.manager.UserManager;
 import smarthome.manager.RoomManager;
 import smarthome.manager.DeviceManager;
 import smarthome.model.User;
+import smarthome.model.Trigger;
 
 class Main{
 private final static int EXIT_CHOICE = 0;
@@ -68,6 +69,11 @@ private static User currentUser = null;
                 String roomName;
                 int roomID;
                 int userID;
+                int controllingUserID = (currentUser != null) ? currentUser.getUserID() : -1;
+                if (roomChoice >= 4 && currentUser == null) {
+                    System.out.println("ERROR: You must be logged in to perform this action.");
+                    break;
+                }
                 switch(roomChoice){
                     case 1:
                         RoomManager.listRooms();
@@ -90,20 +96,28 @@ private static User currentUser = null;
                         roomID = scanner.nextInt();
                         System.out.println("count of users going to add for the particualr room");
                         int userCount = scanner.nextInt();
-                        System.out.println("enter the userIDS to give permission to the room"+roomID+":");
                         List<Integer> userIDList = new ArrayList<>();
+                        System.out.println("enter the userIDS to give permission to the room"+roomID+":");
                         for(int i=0; i<userCount; i++){
                             userID = scanner.nextInt();
                             userIDList.add(userID);
-                            RoomManager.addUserToRoom(roomID, userIDList);
                         }
+                        RoomManager.addUserToRoom(roomID, userIDList); 
                         break;
+                    
                     case 5:
-                        RoomManager.getUserIdsInRoom();
+                        RoomManager.getUserIdsInRoom(controllingUserID);
                         break;
+                        
                     case 6:
                         System.out.println("enter the room ID:");
                         int RoomNo = scanner.nextInt();
+                        
+                        if (!RoomManager.isUserAuthorizedForRoom(RoomNo, controllingUserID)) {
+                            System.out.println("ERROR: You do not have permission to assign devices to Room " + RoomNo + ".");
+                            break;
+                        }
+                        
                         System.out.println("count of devices going to add for the particualr room");
                         int deviceCount = scanner.nextInt();
                         System.out.println("enter the deviceIDS to add to the room"+RoomNo+":");
@@ -111,61 +125,69 @@ private static User currentUser = null;
                         for(int i=0; i<deviceCount; i++){
                             int device = scanner.nextInt();
                             deviceNo.add(device);
-                            RoomManager.addDeviceToRoom(RoomNo, deviceNo);
                         }
+                        RoomManager.addDeviceToRoom(RoomNo, deviceNo);
                         break;
+                        
                     case 7:
-                        RoomManager.getDeviceIdsInRoom();
+                        System.out.print("Enter the Room ID to list its devices: ");
+                        int roomID_list = scanner.nextInt();
+                        
+                        if (!RoomManager.isUserAuthorizedForRoom(roomID_list, controllingUserID)) {
+                            System.out.println("ERROR: You do not have permission to view devices in Room " + roomID_list + ".");
+                            break;
+                        }
+                        RoomManager.getDeviceIdsInRoom(); 
                         break;
+                        
                     case 8:
-    if (currentUser == null) {
-        System.out.println("ERROR: You must be logged in to control devices.");
-        break;
-    }
-    
-    int controllingUserID = currentUser.getUserID(); 
+                        if (currentUser == null) { 
+                            System.out.println("ERROR: You must be logged in to control devices.");
+                            break;
+                        }
+                        
+                        RoomManager.listUserRoomsAndDevices(controllingUserID); 
 
-    RoomManager.listUserRoomsAndDevices(controllingUserID); 
+                        System.out.print("Enter the Room ID you wish to control: ");
+                        if (!scanner.hasNextInt()) {
+                            System.out.println("Invalid input for Room ID.");
+                            scanner.nextLine(); 
+                            break;
+                        }
+                        int roomIdToControl = scanner.nextInt();
+                        scanner.nextLine(); 
+                        RoomManager.listRoomDeviceStatuses(roomIdToControl);
 
-    System.out.print("Enter the Room ID you wish to control: ");
-    if (!scanner.hasNextInt()) {
-        System.out.println("Invalid input for Room ID.");
-        scanner.nextLine(); 
-        break;
-    }
-    int roomIdToControl = scanner.nextInt();
-    scanner.nextLine(); 
+                        if(RoomManager.findRoomById(roomIdToControl) == null) {
+                            System.out.println("Room ID " + roomIdToControl + " does not exist.");
+                            break;
+                        }
+                        
+                        if (!RoomManager.isUserAuthorizedForRoom(roomIdToControl, controllingUserID)) {
+                            System.out.println("ACCESS DENIED: You do not have permission to control devices in Room " + roomIdToControl + ".");
+                            break;
+                        }
+                        
 
-    if(RoomManager.findRoomById(roomIdToControl) == null) {
-        System.out.println("Room ID " + roomIdToControl + " does not exist.");
-        break;
-    }
+                        System.out.print("Enter the Device ID you wish to turn ON/OFF: ");
+                        int deviceIdToControl = scanner.nextInt();
+                        scanner.nextLine(); 
 
-    
-    System.out.print("Enter the Device ID you wish to turn ON/OFF: ");
-    if (!scanner.hasNextInt()) {
-        System.out.println("Invalid input for Device ID.");
-        scanner.nextLine(); 
-        break;
-    }
-    int deviceIdToControl = scanner.nextInt();
-    scanner.nextLine(); 
+                        if (DeviceManager.findDeviceById(deviceIdToControl) == null) {
+                            System.out.println("ERROR: Device ID " + deviceIdToControl + " does not exist in the system.");
+                            break;
+                        }
 
-    if (DeviceManager.findDeviceById(deviceIdToControl) == null) {
-        System.out.println("ERROR: Device ID " + deviceIdToControl + " does not exist in the system.");
-        break;
-    }
-    RoomManager.listRoomDeviceStatuses(roomIdToControl);
+                        System.out.print("Enter action to perform on Device " + deviceIdToControl + " (ON/OFF): ");
+                        String action = scanner.next();
+                        scanner.nextLine(); 
 
-    System.out.print("Enter action to perform on Device " + deviceIdToControl + " (ON/OFF): ");
-    String action = scanner.next();
-    scanner.nextLine(); 
+                        List<Integer> singleDeviceList = new ArrayList<>();
+                        singleDeviceList.add(deviceIdToControl);
 
-    List<Integer> singleDeviceList = new ArrayList<>();
-    singleDeviceList.add(deviceIdToControl);
+                        RoomManager.controlSpecificDevicesInRoom(roomIdToControl, singleDeviceList, action, controllingUserID);
+                        break;
 
-    RoomManager.controlSpecificDevicesInRoom(roomIdToControl, singleDeviceList, action, controllingUserID);
-    break;
                 }
                 break;
         
@@ -174,6 +196,9 @@ private static User currentUser = null;
                 System.out.println("2. Add devices");
                 System.out.println("3. Get device by ID");
                 System.out.println("4. Get device status");
+                System.out.println("5. Add Automated Trigger");
+                System.out.println("6. Update Sensor Reading & Check Triggers");
+
                 int deviceID;
              
                 int deviceChoice = scanner.nextInt();
@@ -199,6 +224,44 @@ private static User currentUser = null;
                         deviceID = scanner.nextInt(); 
                         scanner.nextLine();
                         DeviceManager.getDeviceStatus(deviceID);
+                        break;
+                    case 5:
+                        System.out.println("--- Add Automated Trigger ---");
+                        System.out.print("Enter ID of device to MONITOR (e.g., Thermostat ID): ");
+                        int monitorId = scanner.nextInt();
+                        scanner.nextLine(); 
+                        
+                        System.out.print("Enter condition type (e.g., temperature): ");
+                        String type = scanner.next();
+                        
+                        System.out.print("Enter operator (>, <, ==): ");
+                        String op = scanner.next();
+                        
+                        System.out.print("Enter target value (e.g., 75.0): ");
+                        double value = scanner.nextDouble();
+                        scanner.nextLine(); 
+
+                        System.out.print("Enter action (e.g., turnOff(1) or turnOn(2)): ");
+                        String action = scanner.next();
+                        scanner.nextLine();
+
+                        Trigger.addTrigger(monitorId, type, op, value, action);
+                        
+                        break;
+                    case 6: 
+                        System.out.println("--- Update Sensor Reading ---");
+                        System.out.print("Enter ID of sensor device to update: ");
+                        int sensorId = scanner.nextInt();
+                        scanner.nextLine();
+                        
+                        System.out.print("Enter state type (e.g., temperature, humidity): ");
+                        String stateType = scanner.next();
+                        
+                        System.out.print("Enter new value: ");
+                        double newValue = scanner.nextDouble();
+                        scanner.nextLine();
+                        
+                        DeviceManager.setDeviceSensorValue(sensorId, stateType, newValue);
                         break;
                 }
                 break;

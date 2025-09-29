@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import smarthome.model.ConcreteDevice;
 import smarthome.model.Device; 
-
+import smarthome.model.SensorDevice;
+import smarthome.model.Trigger; 
 public class DeviceManager {
         public enum DeviceName {
         LIGHT_BULB,
         THERMOSTAT,
         DOOR_LOCK,
         SECURITY_CAMERA,
-        SMART_PLUG
     }
 
     public enum DeviceType {
@@ -60,8 +60,11 @@ public class DeviceManager {
             listAvailableDeviceOptions();
             return;
         }
-
+if (deviceType.equalsIgnoreCase("SENSOR") || deviceName.equalsIgnoreCase("THERMOSTAT")) {
+        devices.add(new SensorDevice(deviceID, deviceName, deviceType));
+    } else {
         devices.add(new ConcreteDevice(deviceID, deviceName, deviceType));
+    }
         System.out.println("Device added successfully: ID " + deviceID + ", Name: " + deviceName + ", Type: " + deviceType);
         deviceID++;
     }
@@ -114,5 +117,28 @@ public static void getDeviceStatus(int deviceID) {
             }
         }
         return false;
+    }
+        public static void setDeviceSensorValue(int deviceID, String stateType, double newValue) {
+        Device device = findDeviceById(deviceID);
+
+        if (device == null) {
+            System.out.println("ERROR: Device ID " + deviceID + " not found.");
+            return;
+        }
+        
+        // Check if the device is a SensorDevice to handle sensor values
+        if (device instanceof SensorDevice) {
+            SensorDevice sensor = (SensorDevice) device;
+            sensor.setSensorValue(stateType, newValue);
+            System.out.println("SUCCESS: Device " + deviceID + " (" + sensor.getDeviceName() + 
+                               ") state updated: " + stateType + " is now " + newValue);
+
+            // *** CORE TRIGGER EXECUTION STEP ***
+            // Immediately evaluate if this new value meets any trigger condition
+            Trigger.evaluateTriggers(deviceID, stateType, newValue);
+            
+        } else {
+            System.out.println("ERROR: Device " + deviceID + " is not a sensor capable of updating " + stateType + ".");
+        }
     }
 }
