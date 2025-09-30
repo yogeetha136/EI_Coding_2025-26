@@ -1,3 +1,4 @@
+import SingletonExample.Singleton;
 public class Main{
     public static void main(String[] args) {
         //If you see the same value, then singleton was reused 
