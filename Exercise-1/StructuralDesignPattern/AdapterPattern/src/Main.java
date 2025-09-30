@@ -11,7 +11,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        // --- 1. Direct Target Implementation ---
+        //Direct Target Implementation
         MusicApp newStreamer = new MusicApp() {
             @Override
             public void playSong(String songTitle) {
@@ -19,17 +19,17 @@ public class Main {
             }
         };
 
-        // --- 2. Adaptee Implementation ---
+        // Adaptee Implementation
         OldMP3Player oldPlayer = new OldMP3Player();
         
-        // --- 3. Adaptation ---
+        
         // Wrap the old player with the adapter so it can be treated as a MusicApp
         MusicApp adaptedPlayer = new MP3PlayerAdapter(oldPlayer);
 
         System.out.println("--- New Player Test (Direct Fit) ---");
-        startMusic(newStreamer); // Uses the new, compatible interface
+        startMusic(newStreamer);
 
         System.out.println("\n--- Old Player via Adapter Test ---");
-        startMusic(adaptedPlayer); // Uses the old player through the Adapter
+        startMusic(adaptedPlayer); 
     }
 }
