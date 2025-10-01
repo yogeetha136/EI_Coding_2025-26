@@ -3,7 +3,8 @@ package manager;
 import java.util.List;
 import java.util.ArrayList;
 
-import model.Device; 
+import model.Device;
+import model.DeviceProxy;
 import model.Room;
 import java.util.HashMap;
 import java.util.Map;
@@ -188,58 +189,49 @@ public class RoomManager {
         }
         return null;
     }
-    
-    //Device Control Methods
 
-    public static void controlSpecificDevicesInRoom(int roomID, List<Integer> specificDeviceIds, String action, int userID) {
-        if (findRoomById(roomID) == null) {
-            System.err.println("ERROR: Control failed. Room ID " + roomID + " not found.");
-            return;
-        }
-        if (!isUserAuthorizedForRoom(roomID, userID)) {
-             System.err.println("ERROR: User " + userID + " does not have permission to control devices in Room " + roomID + ".");
-             return;
-        }
+public static void controlSpecificDevicesInRoom(int roomID, List<Integer> specificDeviceIds, String action, int userID) {
 
-        if (!action.equalsIgnoreCase("ON") && !action.equalsIgnoreCase("OFF")) {
-             System.err.println("ERROR: Invalid action. Use 'ON' or 'OFF'.");
-             return;
-        }
-
-        List<Integer> roomDevices = deviceToRoom.get(roomID);
-
-        if (roomDevices == null || roomDevices.isEmpty()) {
-             System.out.println("Room ID " + roomID + " has no devices assigned.");
-             return;
-        }
-
-        System.out.println("\nExecuting action: " + action + " on specific devices by User " + userID + " in Room " + roomID + "...");
-
-        try {
-            for (int deviceID : specificDeviceIds) {
-                if (!roomDevices.contains(deviceID)) {
-                     System.out.println("Warning: Device ID " + deviceID + " is not in Room " + roomID + " and was skipped.");
-                     continue;
-                }
-
-                Device device = manager.DeviceManager.findDeviceById(deviceID); 
-                if (device != null) {
-                    if (action.equalsIgnoreCase("ON")) {
-                        device.turnOn();
-                    } else {
-                        device.turnOff();
-                    }
-                } else {
-                    System.err.println("Warning: Device ID " + deviceID + " not found in DeviceManager. Skipping.");
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("CRITICAL ERROR: Error during device control execution. " + e.getMessage());
-        }
-
-        System.out.println("\nFinal Status of all devices in Room " + roomID + " (including controlled devices):");
-        listRoomDeviceStatuses(roomID);
+    if (findRoomById(roomID) == null) {
+        System.err.println("ERROR: Control failed. Room ID " + roomID + " not found.");
+        return;
     }
+
+    if (!action.equalsIgnoreCase("ON") && !action.equalsIgnoreCase("OFF")) {
+        System.err.println("ERROR: Invalid action. Use 'ON' or 'OFF'.");
+        return;
+    }
+
+    System.out.println("\nExecuting action: " + action + " on specific devices by User " + userID + " in Room " + roomID + "...");
+
+    try {
+        for (int deviceID : specificDeviceIds) {
+            // device in room check
+
+            Device realDevice = manager.DeviceManager.findDeviceById(deviceID); 
+            
+            if (realDevice != null) {
+                
+                // CORE PROXY STEP: Wrap the real device in a proxy!
+                DeviceProxy proxy = new DeviceProxy(realDevice, roomID, userID);
+
+                if (action.equalsIgnoreCase("ON")) {
+                    proxy.turnOn(); // The proxy handles the auth check before calling realDevice.turnOn()
+                } else {
+                    proxy.turnOff(); // The proxy handles the auth check before calling realDevice.turnOff()
+                }
+            } else {
+                System.err.println("Warning: Device ID " + deviceID + " not found in DeviceManager. Skipping.");
+            }
+        }
+    } catch (Exception e) {
+        System.err.println("CRITICAL ERROR: Error during device control execution. " + e.getMessage());
+    }
+
+    System.out.println("\nFinal Status of all devices in Room " + roomID + " (including controlled devices):");
+    listRoomDeviceStatuses(roomID);
+}
+
 
     public static void listRoomDeviceStatuses(int roomID) {
         List<Integer> deviceIds = deviceToRoom.get(roomID);
@@ -250,6 +242,7 @@ public class RoomManager {
         }
 
         System.out.println("\n--- Current Device Statuses in Room " + roomID + " ---");
+        
         try {
             for (int deviceID : deviceIds) {
                 manager.DeviceManager.getDeviceStatus(deviceID); 

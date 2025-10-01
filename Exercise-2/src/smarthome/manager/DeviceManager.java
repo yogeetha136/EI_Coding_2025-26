@@ -6,6 +6,7 @@ import model.ConcreteDevice;
 import model.Device;
 import model.SensorDevice;
 import model.Trigger;
+import model.SensorSubject;
 
 public class DeviceManager {
     public enum DeviceName {
@@ -24,7 +25,6 @@ public class DeviceManager {
     private static int deviceID = 1;
     public static List<Device> devices = new ArrayList<>();
 
-
     public static void listDevices() {
         if (devices.isEmpty()) {
             System.out.println("No devices have been added yet.");
@@ -37,9 +37,6 @@ public class DeviceManager {
         }
     }
 
-
-     //Prints the available device names and types from the Enums.
-  
     public static void listAvailableDeviceOptions() {
         System.out.println("\n--- Available Device Names ---");
         for (DeviceName name : DeviceName.values()) {
@@ -52,7 +49,6 @@ public class DeviceManager {
         }
         System.out.println();
     }
-
 
     public static void addDevices(String deviceName, String deviceType) {
         if (deviceName == null || deviceName.trim().isEmpty() || deviceType == null || deviceType.trim().isEmpty()) {
@@ -72,20 +68,23 @@ public class DeviceManager {
             return;
         }
 
-        // Determine which concrete class to instantiate
         String typeUpper = deviceType.toUpperCase();
         String nameUpper = deviceName.toUpperCase();
+        Device newDevice;
 
         if (typeUpper.equals(DeviceType.SENSOR.name()) || nameUpper.equals(DeviceName.THERMOSTAT.name())) {
-            devices.add(new SensorDevice(deviceID, deviceName, deviceType));
+            newDevice = new SensorDevice(deviceID, deviceName, deviceType);
+            if (newDevice instanceof SensorSubject) {
+                ((SensorSubject) newDevice).registerObserver(Trigger.getInstance());
+            }
         } else {
-            devices.add(new ConcreteDevice(deviceID, deviceName, deviceType));
+            newDevice = new ConcreteDevice(deviceID, deviceName, deviceType);
         }
 
+        devices.add(newDevice);
         System.out.println("SUCCESS: Device added. ID " + deviceID + ", Name: " + deviceName + ", Type: " + deviceType);
         deviceID++;
     }
-
 
     public static void getDevice(int id) {
         Device device = findDeviceById(id);
@@ -99,7 +98,6 @@ public class DeviceManager {
         }
     }
 
- 
     public static Device findDeviceById(int id) {
         for (Device device : devices) {
             if (device.getDeviceID() == id) {
@@ -109,18 +107,17 @@ public class DeviceManager {
         return null;
     }
 
-
     public static void getDeviceStatus(int deviceID) {
         Device device = findDeviceById(deviceID);
         if (device != null) {
             System.out.println("\n--- Device Status (ID " + deviceID + ") ---");
-            device.getStatus();
+        String statusDetails = device.getStatus();
+        System.out.println(statusDetails);
         } else {
             System.out.println("ERROR: Device ID " + deviceID + " not found.");
         }
     }
 
-  
     public static void setDeviceSensorValue(int deviceID, String stateType, double newValue) {
         Device device = findDeviceById(deviceID);
 
@@ -129,24 +126,16 @@ public class DeviceManager {
             return;
         }
 
-        // Check if the device is a SensorDevice using instanceof
         if (device instanceof SensorDevice) {
-            // Safe cast after checking
             SensorDevice sensor = (SensorDevice) device;
             sensor.setSensorValue(stateType, newValue);
             System.out.println("SUCCESS: Device " + deviceID + " (" + sensor.getDeviceName() +
                                ") state updated: " + stateType + " is now " + newValue);
-
-            // CORE TRIGGER EXECUTION STEP
-            Trigger.evaluateTriggers(deviceID, stateType, newValue);
-
         } else {
-            System.out.println("ERROR: Device " + deviceID + " (" + device.getDeviceName() + 
+            System.out.println("ERROR: Device " + deviceID + " (" + device.getDeviceName() +
                                ") is a " + device.getDeviceType() + " and is not a sensor capable of updating " + stateType + ".");
         }
     }
-
- 
 
     private static boolean isDeviceNameValid(String deviceName) {
         if (deviceName == null) return false;

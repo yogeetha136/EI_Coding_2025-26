@@ -4,9 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import Interface.SensorObserver;
 import manager.DeviceManager;
 
-public class Trigger {
+public class Trigger implements SensorObserver{
+        // --- STATIC SINGLETON INSTANCE ---
+    private static final Trigger instance = new Trigger();
+    public static Trigger getInstance() { 
+        return instance; 
+    }
+    private Trigger() { //Private constructor for Singleton
+        }
 
     // Helper class to store a single trigger rule
     private static class TriggerRule {
@@ -59,21 +68,15 @@ public class Trigger {
     }
     
 
-    public static void evaluateTriggers(int monitoringDeviceId, String stateType, double currentStateValue) {
-        List<TriggerRule> rules = deviceTriggers.get(monitoringDeviceId);
-        
-        if (rules == null || rules.isEmpty()) {
-            return; 
-        }
-
-        System.out.println("\n--- Evaluating Triggers for Device " + monitoringDeviceId + " (Current " + stateType + ": " + currentStateValue + ") ---");
-        
-        for (TriggerRule rule : rules) {
-            if (rule.conditionType.equalsIgnoreCase(stateType)) {
-                boolean conditionMet = checkCondition(currentStateValue, rule.operator, rule.value);
-                
-                if (conditionMet) {
-                    System.out.println("TRIGGER ACTIVATED: Condition met: " + rule.conditionType + " " + rule.operator + " " + rule.value);
+@Override 
+    public void update(int deviceID, String stateType, double newValue) {
+        System.out.println("[TRIGGER]: Received update from Device " + deviceID + " for " + stateType);
+        // New core logic:
+        List<TriggerRule> rules = deviceTriggers.get(deviceID);
+        if (rules != null) {
+            for (TriggerRule rule : rules) {
+                if (checkCondition(newValue, rule.operator, rule.value)) {
+                    System.out.println("TRIGGER ACTIVATED! Firing action: " + rule.action);
                     executeAction(rule.action);
                 }
             }
