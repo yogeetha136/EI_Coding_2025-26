@@ -18,28 +18,28 @@ The system is built using core **Object-Oriented Design Patterns** for modularit
 
 ## Project Structure
 
-SmartHomeSystem
-├── Interface/
-│ ├── DeviceInterface.java // Basic device controls (turnOn, turnOff, getStatus)
-│ └── SensorObserver.java // Observer interface (update method)
-│
-├── model/
-│ ├── User.java // User data model
-│ ├── Room.java // Room data model
-│ ├── Device.java // Abstract device class (implements DeviceInterface)
-│ ├── ConcreteDevice.java // Standard device (e.g., Light Bulb, Door Lock)
-│ ├── SensorDevice.java // Sensor device (e.g., Thermostat)
-│ ├── SensorSubject.java // Sensor subject interface (register, unregister, notify)
-│ ├── DeviceProxy.java // Proxy for access control
-│ └── Trigger.java // Singleton automation manager (implements SensorObserver)
-│
-├── manager/
-│ ├── UserManager.java // User creation, login, retrieval
-│ ├── RoomManager.java // Room management & user authorization
-│ ├── DeviceManager.java // Device creation, assignment, and updates
-│ └── Scheduler.java // Time-based task manager
-│
-└── Main.java // Entry point for running the system
+- **SmartHomeSystem**
+- **├── Interface/**
+- **│ ├── DeviceInterface.java // Basic device controls (turnOn, turnOff, getStatus)**
+- **│ └── SensorObserver.java // Observer interface (update method)**
+- **│**
+- **├── model/**
+- **│ ├── User.java // User data model**
+- **│ ├── Room.java // Room data model**
+- **│ ├── Device.java // Abstract device class (implements DeviceInterface)**
+- **│ ├── ConcreteDevice.java // Standard device (e.g., Light Bulb, Door Lock)**
+- **│ ├── SensorDevice.java // Sensor device (e.g., Thermostat)**
+- **│ ├── SensorSubject.java // Sensor subject interface (register, unregister, notify)**
+- **│ ├── DeviceProxy.java // Proxy for access control**
+- **│ └── Trigger.java // Singleton automation manager (implements SensorObserver)**
+- **│**
+- **├── manager/**
+- **│ ├── UserManager.java // User creation, login, retrieval**
+- **│ ├── RoomManager.java // Room management & user authorization**
+- **│ ├── DeviceManager.java // Device creation, assignment, and updates**
+- **│ └── Scheduler.java // Time-based task manager**
+- **│**
+- **└── Main.java // Entry point for running the system**
 
 
 ---
@@ -60,20 +60,20 @@ public class Main {
         System.out.println("--- Smart Home System Initialization ---");
 
         // 1. Add Users
-        UserManager.addUser("Alice", "alice@home.com", "Secure@123"); // ID 1
-        UserManager.addUser("Bob", "bob@home.com", "Secure@123");     // ID 2
+        UserManager.addUser("Alice", "alice@home.com", "Secure@123"); 
+        UserManager.addUser("Bob", "bob@home.com", "Secure@123");     
         User loggedInUser = UserManager.login("alice@home.com", "Secure@123");
         
         // 2. Add Room
-        RoomManager.addRoom("Living Room", "COMMUNAL_AREA"); // ID 1
+        RoomManager.addRoom("Living Room", "COMMUNAL_AREA"); 
 
         // 3. Assign User 1 to Room 1
         RoomManager.assignUserToRoom(1, 1);
         System.out.println("\n" + RoomManager.isUserAuthorizedForRoom(1, 1)); // true
 
         // 4. Add Devices
-        DeviceManager.addDevices("LIGHT_BULB", "ACTUATOR");   // ID 1
-        DeviceManager.addDevices("THERMOSTAT", "SENSOR");     // ID 2 (SensorDevice)
+        DeviceManager.addDevices("LIGHT_BULB", "ACTUATOR");   
+        DeviceManager.addDevices("THERMOSTAT", "SENSOR");    
 
         // 5. Assign Devices to Room
         RoomManager.addDeviceToRoom(1, List.of(1, 2));
@@ -109,12 +109,13 @@ public class Main {
 }
 ```
 
-### 2. Compile
+
+2.  **Compile** the Java files inside /src/smarthome:
     ```bash
-javac Interface/*.java model/*.java manager/*.java Main.java
+    javac Interface/*.java model/*.java manager/*.java Main.java
     ```
 
-### 3. Run
+3. **Run**
     ```bash
     java Main
     ```
