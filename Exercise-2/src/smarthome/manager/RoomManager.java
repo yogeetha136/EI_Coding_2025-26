@@ -1,10 +1,10 @@
-package smarthome.manager;
+package manager;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import smarthome.model.Device;
-import smarthome.model.Room;
+import model.Device;
+import model.Room;
 import java.util.HashMap;
 import java.util.Map;
 

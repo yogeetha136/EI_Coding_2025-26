@@ -1,11 +1,11 @@
-package smarthome.manager;
+package manager;
 
 import java.util.ArrayList;
 import java.util.List;
-import smarthome.model.ConcreteDevice;
-import smarthome.model.Device; 
-import smarthome.model.SensorDevice;
-import smarthome.model.Trigger; 
+import model.ConcreteDevice;
+import model.Device; 
+import model.SensorDevice;
+import model.Trigger; 
 public class DeviceManager {
         public enum DeviceName {
         LIGHT_BULB,

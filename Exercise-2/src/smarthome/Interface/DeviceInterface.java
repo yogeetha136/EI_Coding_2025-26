@@ -1,4 +1,4 @@
-package smarthome.Interface;
+package Interface;
 
 public interface DeviceInterface {
  String getStatus();

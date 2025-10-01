@@ -1,4 +1,4 @@
-package smarthome.model;
+package model;
 public class Room {
     private int roomID;
     private String roomName;

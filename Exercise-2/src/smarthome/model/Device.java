@@ -1,5 +1,5 @@
-package smarthome.model;
-import smarthome.Interface.DeviceInterface;
+package model;
+import Interface.DeviceInterface;
 
 public abstract class Device implements DeviceInterface{
     private int deviceID;

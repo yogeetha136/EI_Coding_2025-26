@@ -1,13 +1,13 @@
-package smarthome;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import smarthome.manager.UserManager;
-import smarthome.manager.RoomManager;
-import smarthome.manager.DeviceManager;
-import smarthome.model.User;
-import smarthome.model.Trigger;
+import manager.UserManager;
+import manager.RoomManager;
+import manager.DeviceManager;
+import model.User;
+import model.Trigger;
+import manager.Scheduler;
 
 class Main{
 private final static int EXIT_CHOICE = 0;
@@ -15,12 +15,19 @@ private static User currentUser = null;
     public static void main(String args[]){
         Scanner scanner = new Scanner(System.in);
         int moduleChoice;
-            
+        Scheduler.startScheduler();
+
         do{
+ 
         System.out.println("1.User Module");
         System.out.println("2.Room Module");
         System.out.println("3.Device Module");
         moduleChoice = scanner.nextInt();
+                       if (moduleChoice == EXIT_CHOICE) {
+                System.out.println("Shutting down scheduler and exiting...");
+                Scheduler.stopScheduler();
+                break;                     
+            }
         switch(moduleChoice){
             case 1:
                 System.out.println("1. List the users");
@@ -130,7 +137,7 @@ private static User currentUser = null;
                         break;
                         
                     case 7:
-                        System.out.print("Enter the Room ID to list its devices: ");
+                        System.out.print("Enter the Room ID to list its devices:");
                         int roomID_list = scanner.nextInt();
                         
                         if (!RoomManager.isUserAuthorizedForRoom(roomID_list, controllingUserID)) {
@@ -198,6 +205,8 @@ private static User currentUser = null;
                 System.out.println("4. Get device status");
                 System.out.println("5. Add Automated Trigger");
                 System.out.println("6. Update Sensor Reading & Check Triggers");
+                System.out.println("7. Add Schedule Task");
+                System.out.println("8. List Scheduled Tasks");
 
                 int deviceID;
              
@@ -263,6 +272,25 @@ private static User currentUser = null;
                         
                         DeviceManager.setDeviceSensorValue(sensorId, stateType, newValue);
                         break;
+
+                case 7:
+                    System.out.println("--- Add Scheduled Task ---");
+                    System.out.print("Enter target Device ID: ");
+                    int targetId = scanner.nextInt();
+                    scanner.nextLine();
+                    
+                    System.out.print("Enter time (HH:mm, e.g., 08:30): ");
+                    String time = scanner.next();
+                    
+                    System.out.print("Enter command (TurnOn or TurnOff): ");
+                    String command = scanner.next();
+                    
+                    Scheduler.addSchedule(targetId, time, command);
+                    break;
+                    
+                case 8:
+                    Scheduler.listSchedules();
+                    break;
                 }
                 break;
             

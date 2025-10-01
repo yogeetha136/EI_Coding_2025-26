@@ -1,10 +1,10 @@
-package smarthome.model;
+package model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import smarthome.manager.DeviceManager;
+import manager.DeviceManager;
 
 public class Trigger {
 

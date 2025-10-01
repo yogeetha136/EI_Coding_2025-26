@@ -1,4 +1,4 @@
-package smarthome.model;
+package model;
 
 public class ConcreteDevice extends Device{
         public ConcreteDevice(int deviceID, String deviceName, String deviceType) {

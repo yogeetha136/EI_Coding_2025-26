@@ -1,4 +1,4 @@
-package smarthome.model;
+package model;
 
 public class User{
     private int userID;
