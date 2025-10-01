@@ -9,6 +9,7 @@ import model.User;
 import model.Trigger;
 import manager.Scheduler;
 
+
 class Main{
     // Constant for the exit menu option.
     private final static int EXIT_CHOICE = 0;
