@@ -32,18 +32,10 @@ public class Trigger {
     // Map: Key = Device ID being MONITORED (e.g., Thermostat ID), Value = List of rules for that device
     private static final Map<Integer, List<TriggerRule>> deviceTriggers = new HashMap<>();
 
-    /**
-     * Adds a new trigger rule to a monitoring device.
-     * @param monitoringDeviceId The ID of the device whose state is being checked (e.g., Thermostat ID).
-     * @param conditionType The type of condition (e.g., "temperature").
-     * @param operator The comparison operator (e.g., ">", "<", "==").
-     * @param value The value to compare against (e.g., 75).
-     * @param action The action to execute (e.g., "turnOff(1)").
-     */
+
     public static void addTrigger(int monitoringDeviceId, String conditionType, 
                                   String operator, double value, String action) {
         
-        // Basic Validation: Check if the monitoring device exists
         if (DeviceManager.findDeviceById(monitoringDeviceId) == null) {
             System.out.println("ERROR: Monitoring Device ID " + monitoringDeviceId + " not found. Cannot add trigger.");
             return;
@@ -51,16 +43,13 @@ public class Trigger {
 
         TriggerRule newRule = new TriggerRule(conditionType, operator, value, action);
         
-        // Add rule to the map. Use computeIfAbsent for clean list initialization.
         deviceTriggers.computeIfAbsent(monitoringDeviceId, k -> new ArrayList<>()).add(newRule);
 
         System.out.println("Trigger added successfully. Device " + monitoringDeviceId + " monitored.");
         System.out.println("Automated Triggers: " + getDeviceTriggers(monitoringDeviceId));
     }
     
-    /**
-     * Lists all triggers for a specific monitoring device.
-     */
+
     public static String getDeviceTriggers(int monitoringDeviceId) {
         List<TriggerRule> rules = deviceTriggers.get(monitoringDeviceId);
         if (rules == null || rules.isEmpty()) {
@@ -69,15 +58,12 @@ public class Trigger {
         return rules.toString();
     }
     
-    /**
-     * Placeholder method to show where the execution logic would go.
-     * In a real system, this would be called whenever a device's state changes.
-     */
+
     public static void evaluateTriggers(int monitoringDeviceId, String stateType, double currentStateValue) {
         List<TriggerRule> rules = deviceTriggers.get(monitoringDeviceId);
         
         if (rules == null || rules.isEmpty()) {
-            return; // No triggers to check
+            return; 
         }
 
         System.out.println("\n--- Evaluating Triggers for Device " + monitoringDeviceId + " (Current " + stateType + ": " + currentStateValue + ") ---");
