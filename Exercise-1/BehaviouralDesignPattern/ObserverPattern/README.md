@@ -41,7 +41,6 @@ When running the program, you’ll see how observers are notified when the edito
 ## How to Run
 
 1. Ensure you have **Java** installed on your machine.
-    ```
 2. **Compile** all the Java files:
     ```bash
     javac Main.java editor/*.java publisher/*.java listeners/*.java

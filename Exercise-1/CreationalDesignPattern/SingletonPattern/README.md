@@ -29,7 +29,7 @@ Since the Singleton pattern ensures only one instance is ever created, the secon
 2.  Save the code as `Singleton.java` and `Main.java` in the same directory.
 3.  **Compile** the Java files:
     ```bash
-    javac Singleton.java Main.java
+    javac SingletonExample/Singleton.java Main.java
     ```
 4.  **Run** the Main class:
     ```bash

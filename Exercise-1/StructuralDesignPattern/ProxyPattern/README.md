@@ -43,7 +43,6 @@ When running the program, two scenarios are demonstrated:
 ## How to Run
 
 1. Ensure you have **Java** installed on your machine.
-    ```
 2. **Compile** all the Java files:
     ```bash
     javac Main.java document_access/*.java proxy/*.java
