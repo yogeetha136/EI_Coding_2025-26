@@ -8,7 +8,7 @@ import manager.DeviceManager;
 import model.User;
 import model.Trigger;
 import manager.Scheduler;
-
+import util.SmartHomeLogger;
 
 class Main{
     // Constant for the exit menu option.
@@ -94,6 +94,7 @@ class Main{
                             System.out.print("Password: ");
                             String passWord = scanner.nextLine();
                             UserManager.addUser(userName, emailID, passWord);
+                            SmartHomeLogger.info("Main", "New user added: " + userName + " (" + emailID + ")");
                             break;
                         case 3:
                             // Get User By ID Logic
@@ -120,7 +121,7 @@ class Main{
                             String password = scanner.nextLine();
                             currentUser = UserManager.login(email, password);
                             if (currentUser != null) {
-                                System.out.println("User " + currentUser.getUserID() + " logged in successfully.");
+                                SmartHomeLogger.info("Main", "User " + currentUser.getUserID() + " (" + currentUser.getUserName() + ") logged in."); // <<< USER LOGIN LOG
                             }
                             break;
                         default:
@@ -182,6 +183,7 @@ class Main{
                             System.out.print("Room Type: ");
                             roomType = scanner.nextLine();
                             RoomManager.addRooms(roomName, roomType);
+                            SmartHomeLogger.info("Main", "New room added: " + roomName + " (" + roomType + ")");
                             break;
                         case 3:
                             // Get Room By ID Logic
@@ -233,6 +235,7 @@ class Main{
                             }
                             scanner.nextLine(); 
                             RoomManager.addUserToRoom(roomID, userIDList); 
+                            SmartHomeLogger.info("Main", "Permissions updated: Added users " + userIDList + " to Room ID " + roomID);
                             break;
                         
                         case 5:
@@ -293,6 +296,7 @@ class Main{
                             }
                             scanner.nextLine(); 
                             RoomManager.addDeviceToRoom(roomNo, deviceNo);
+                            SmartHomeLogger.info("Main", "Room update: Added devices " + deviceNo + " to Room ID " + roomNo);
                             break;
                             
                         case 7:
@@ -422,6 +426,7 @@ class Main{
                             System.out.print("Device Type: ");
                             String deviceType = scanner.nextLine();
                             DeviceManager.addDevices(deviceName, deviceType);
+                            SmartHomeLogger.info("Main", "New device added: " + deviceName + " (" + deviceType + ")");
                             break;
                         case 3:
                             // Get Device By ID Logic
@@ -505,6 +510,7 @@ class Main{
                             // Delegate trigger creation to the Trigger model/manager.
                             Trigger.addTrigger(monitorId, type, op, value, action);
                             System.out.println("Added new trigger for Device " + monitorId);
+                            SmartHomeLogger.info("Main", "New trigger added for Device " + monitorId + ". Condition: " + type + " " + op + " " + value + " -> Action: " + action);
                             break;
                         case 6: 
                             // Update Sensor Reading Logic
@@ -548,6 +554,7 @@ class Main{
                             // Update the sensor value and automatically check for triggered actions.
                             DeviceManager.setDeviceSensorValue(sensorId, stateType, newValue);
                             System.out.println("Updated Sensor " + sensorId + " reading to " + newValue);
+                            SmartHomeLogger.info("Main", "Sensor update: Device " + sensorId + " set to " + stateType + "=" + newValue + ". Triggers are now being checked.");
                             break;
 
                         case 7:
@@ -579,6 +586,7 @@ class Main{
                             // Add the task to the Scheduler.
                             Scheduler.addSchedule(targetId, time, command);
                             System.out.println("Added scheduled task for Device " + targetId + " at " + time);
+                            SmartHomeLogger.info("Main", "New scheduled task added for Device " + targetId + " at " + time + " to " + command);
                             break;
                             
                         case 8:

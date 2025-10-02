@@ -3,12 +3,13 @@ package model;
 
 import Interface.DeviceInterface;
 import manager.RoomManager;
+import util.SmartHomeLogger;
 
 public class DeviceProxy implements DeviceInterface {
     
     private final Device realDevice;
     private final int roomID;
-    private final int userID; // Store the user attempting the action
+    private final int userID;
 
     public DeviceProxy(Device realDevice, int roomID, int userID) {
         this.realDevice = realDevice;
@@ -16,7 +17,7 @@ public class DeviceProxy implements DeviceInterface {
         this.userID = userID;
     }
 
-    // --- Access Control Logic for Mutating Methods (turnOn/turnOff) ---
+    //Access Control Logic for Mutating Methods
 
     private boolean isAuthorized() {
         return RoomManager.isUserAuthorizedForRoom(roomID, userID);
@@ -28,9 +29,9 @@ public class DeviceProxy implements DeviceInterface {
             // Forward the request to the real device
             realDevice.turnOn();
         } else {
-            System.err.println("PROXY DENIED: User " + userID + 
-                               " is unauthorized to turn ON Device " + realDevice.getDeviceID() + 
-                               " in Room " + roomID + ".");
+            String denyMsg = "User " + userID + " is unauthorized to turn ON Device " + realDevice.getDeviceID() + " in Room " + roomID + ".";
+            System.err.println("PROXY DENIED: " + denyMsg);
+            SmartHomeLogger.error("DeviceProxy", denyMsg);
         }
     }
 
@@ -40,13 +41,12 @@ public class DeviceProxy implements DeviceInterface {
             // Forward the request to the real device
             realDevice.turnOff();
         } else {
-            System.err.println("PROXY DENIED: User " + userID + 
-                               " is unauthorized to turn OFF Device " + realDevice.getDeviceID() + 
-                               " in Room " + roomID + ".");
-        }
+            String denyMsg = "User " + userID + " is unauthorized to turn OFF Device " + realDevice.getDeviceID() + " in Room " + roomID + ".";
+            System.err.println("PROXY DENIED: " + denyMsg);
+            SmartHomeLogger.error("DeviceProxy", denyMsg);        }
     }
 
-    // --- Direct Forwarding Logic for Read-Only Methods ---    
+    //Direct Forwarding Logic for Read-Only Methods   
     @Override
     public String getStatus() {
         return realDevice.getStatus();

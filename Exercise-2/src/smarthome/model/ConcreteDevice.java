@@ -1,4 +1,6 @@
 package model;
+import util.SmartHomeLogger;
+
 
 public class ConcreteDevice extends Device{
         public ConcreteDevice(int deviceID, String deviceName, String deviceType) {
@@ -6,7 +8,8 @@ public class ConcreteDevice extends Device{
     }
     @Override
     public void createDevice() {
-        System.out.println("Concrete Device: " + getDeviceName() + " (" + getDeviceType() + ") is created.");
-    }
+        String msg = "Concrete Device: " + getDeviceName() + " (" + getDeviceType() + ") is created.";
+        System.out.println(msg);
+        SmartHomeLogger.info("ConcreteDevice", msg);    }
     
 }
