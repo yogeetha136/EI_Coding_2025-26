@@ -39,6 +39,8 @@ The system is built using core **Object-Oriented Design Patterns** for modularit
 - **│ ├── DeviceManager.java // Device creation, assignment, and updates**
 - **│ └── Scheduler.java // Time-based task manager**
 - **│**
+- **├── util/**
+- **│ ├── SmartHomeLogger.java//Logger file**
 - **└── Main.java // Entry point for running the system**
 
 
